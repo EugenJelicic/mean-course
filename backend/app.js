@@ -1,6 +1,20 @@
 const express = require("express");
+const mongoose = require("mongoose");
+
+const Post = require("./models/post");
 
 const app = express();
+
+mongoose
+  .connect(
+    "mongodb+srv://eugen:m4AV4oJ483eAHUZR@cluster0.2ubfh.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", {useNewUrlParser: true, useUnifiedTopology: true}
+  )
+  .then(() => {
+    console.log("Connected to database!");
+  })
+  .catch(() => {
+    console.log("Connection failed!");
+  });
 
 app.use(express.json());
 
@@ -18,10 +32,14 @@ app.use((req, res, next) => {
 });
 
 app.post("/api/posts", (req, res, next) => {
-  const post = req.body;
-  console.log(post);
+  const post = new Post({
+    title: req.body.title,
+    content: req.body.content,
+  });
+
+  post.save();
   res.status(201).json({
-    message: 'Post added successfully'
+    message: "Post added successfully",
   });
   next();
 });
